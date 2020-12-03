@@ -138,3 +138,10 @@ _Steps to add node_
 - Server will get a push notification about the membership changes.
 - Launch a new server process based on the node information given by Consul.
 - Re-balance existing data to the new node.
+
+
+### Handy Command
+1. `consul agent -dev -node machine` to spin up an consul agent
+2. `pipenv run init_service_registration.py 4` to register 4 service with consul
+3. `pipenv run server_consumer.py` to run server
+4. `pipenv run client_producer.py ch-add-remove 2003` to run client with consistent hashing adding and removing node

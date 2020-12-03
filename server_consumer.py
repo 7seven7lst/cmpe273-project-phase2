@@ -4,7 +4,8 @@ import requests
 import atexit
 import urllib
 import consul
-import os, signal
+import os
+import signal
 from  multiprocessing import Process
 
 c = consul.Consul()
@@ -19,8 +20,8 @@ def server(port):
         raw = consumer.recv_json()
         op, key, value = raw.get('op'), raw.get('key'), raw.get('value')
         print(f"Server_port={port}:key={key},value={value}")
-        # FIXME: Implement to store the key-value data.
         if op == 'PUT':
+            print("Putting key, value...", key, value)
             storage_dict[key] = value
             consumer.send_json({
                 'key': key,
@@ -50,12 +51,15 @@ def server(port):
                 'collection': key_list
             })
         elif op == 'DELETE':
+            print("DELETING ONE key...", key)
             storage_dict.pop(key, None)
             consumer.send_json({
                 'key': key,
                 'status': 'deleted'
             })
         elif op == 'ADD_NODE':
+            # get services from consule
+            # add node that has port number +1 of the last service
             print("add node...")
             services = c.agent.services()
             last_server = list(services.keys())[-1]
@@ -77,7 +81,6 @@ def server(port):
             pid = services[server_id]['Address']
             os.kill(int(pid), signal.SIGSTOP)
             consumer.send_json({'port': services[last_server]['Port']})
-            print("herer")
 
 def register_server(server):
     c.agent.service.register(
@@ -105,14 +108,14 @@ if __name__ == "__main__":
         num_server = int(sys.argv[1])
         print(f"num_server={num_server}")
 
-
     for each_server in range(num_server):
         server_port = "200{}".format(each_server)
         print(f"Starting a server at:{server_port}...")
-        current_server = {'server': f"tcp://127.0.0.1:{server_port}", 'port': server_port}
+        current_server = {
+            'server': f"tcp://127.0.0.1:{server_port}",
+            'port': server_port
+        }
         p = Process(target=server, args=(server_port,))
         p.start()
         current_server['pid'] = p.pid
         register_server(current_server)
-
-

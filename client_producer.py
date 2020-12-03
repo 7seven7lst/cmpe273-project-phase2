@@ -23,7 +23,8 @@ def create_clients(servers):
 
 
 def generate_data_round_robin(servers):
-    print("Starting...")
+    print("*********************")
+    print("Starting Round Robin...")
     producers = create_clients(servers)
     pool = cycle(producers.values())
     for num in range(10):
@@ -33,10 +34,12 @@ def generate_data_round_robin(servers):
         node.send_json(data)
         message = node.recv_json()
         time.sleep(1)
-    print("Done")
+    print("Done Round Robin...")
+    print("*********************")
 
 
 def generate_data_consistent_hashing_simple(servers):
+    print("*********************")
     print("Starting Consistent Hashing...")
     producers = create_clients(servers)
     nodes = []
@@ -70,6 +73,7 @@ def generate_data_consistent_hashing_simple(servers):
         print(f"from node: {node.name}")
         time.sleep(2)
     print("Done reading")
+    print("*********************")
 
 def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
     print("Starting Consistent Hashing...")
@@ -79,6 +83,7 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         nodes.append(consistent_hashing.Node(value, key))
     client_ring = consistent_hashing.ConsistentHashRing(nodes)
 
+    print("*********************")
     print("Writing data, 1-10...")
     for num in range(10):
         data = {
@@ -93,7 +98,10 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         message = node.node.recv_json()
         time.sleep(2)
     print("Done writing...")
+    print("*********************")
 
+    time.sleep(5)
+    print("*********************")
     print("Adding new node...")
     node = nodes[0]
     node.node.send_json({ 'op': 'ADD_NODE' })
@@ -131,7 +139,11 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         })
         message = next_node.node.recv_json()
         print(f"rebalanced data from old node, {message}")
+        time.sleep(2)
 
+    time.sleep(5)
+    print("*********************")
+    print("Adding more data...")
     for num in range(11, 20):
         data = { 'op': 'PUT', 'key': f'key-{num}', 'value': f'value-{num}' }
         print(f"Sending data:{data}")
@@ -142,9 +154,11 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
     print("Done Rebalancing data")
     time.sleep(2)
     print("Done adding new node")
+    print("*********************")
 
-
-    print("Removing added node...")
+    time.sleep(5)
+    print("*********************")
+    print("Removing node...")
     node = nodes[0]
     node_to_remove = None
     for k, mynode in client_ring.ring.items():
@@ -171,6 +185,7 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         })
         message = node_to_remove.node.recv_json()
         print(f"data is rebalanced from current node: {message}")
+        time.sleep(2)
 
     nextnode.node.send_json({
         'op': 'GET_ALL'
@@ -182,10 +197,11 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
     print(f"deleted node {message}")
     time.sleep(2)
     print("Done removing")
+    print("*********************")
 
 def generate_data_hrw_hashing(servers):
-    print("Starting...")
-    ## TODO
+    print("*********************")
+    print("Starting Rendavous Hashing...")
     producers = create_clients(servers)
     counter = 1
     nodes = []
@@ -198,8 +214,9 @@ def generate_data_hrw_hashing(servers):
         node = hrw.determine_responsible_node(nodes, data['key'])
         node.node.send_json(data)
         message = node.node.recv_json()
-        time.sleep(1)
-    print("Done")
+        time.sleep(2)
+    print("Done Rendavous Hashing...")
+    print("*********************")
 
 if __name__ == "__main__":
     mode = 'ch-basic'

@@ -75,12 +75,11 @@ def server(port):
         elif op == 'DELETE_NODE':
             print("delete node...")
             services = c.agent.services()
-            last_server = list(services.keys())[-1]
-            server_id = 'server-'+str(services[last_server]['Port'])
+            server_id = 'server-'+str(key)
             c.agent.service.deregister(server_id)
             pid = services[server_id]['Address']
             os.kill(int(pid), signal.SIGSTOP)
-            consumer.send_json({'port': services[last_server]['Port']})
+            consumer.send_json({'port': key})
 
 def register_server(server):
     c.agent.service.register(
@@ -103,17 +102,14 @@ def exit_handler():
 atexit.register(exit_handler)
 
 if __name__ == "__main__":
-    num_server = 1
-    if len(sys.argv) > 1:
-        num_server = int(sys.argv[1])
-        print(f"num_server={num_server}")
+    services = c.agent.services()
 
-    for each_server in range(num_server):
-        server_port = "200{}".format(each_server)
+    for k, each_server in services.items():
+        server_port = each_server['Port']
         print(f"Starting a server at:{server_port}...")
         current_server = {
             'server': f"tcp://127.0.0.1:{server_port}",
-            'port': server_port
+            'port': str(server_port)
         }
         p = Process(target=server, args=(server_port,))
         p.start()

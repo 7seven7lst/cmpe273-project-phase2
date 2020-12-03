@@ -142,7 +142,7 @@ _Steps to add node_
 
 ### Handy Command
 1. `consul agent -dev -node machine` to spin up an consul agent
-2. `pipenv run init_service_registration.py 4` to register 4 service with consul
-3. `pipenv run server_consumer.py` to run server
-4. `pipenv run client_producer.py ch-add-remove 2003` to run client with consistent hashing adding and removing node
+2. `pipenv run python init_service_registration.py 4` to register 4 service with consul
+3. `pipenv run python server_consumer.py` to run server
+4. `pipenv run python client_producer.py ch-add-remove 2003` to run client with consistent hashing adding and removing node
 5. `curl http://127.0.0.1:8500/v1/agent/services` to monitor the registered services

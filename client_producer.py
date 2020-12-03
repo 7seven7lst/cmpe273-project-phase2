@@ -56,7 +56,7 @@ def generate_data_consistent_hashing_simple(servers):
         print(f"to node:{node.name}")
         node.node.send_json(data)
         message = node.node.recv_json()
-        time.sleep(1)
+        time.sleep(2)
     print("Done writing...")
 
     print("Reading previously written data...")
@@ -68,7 +68,7 @@ def generate_data_consistent_hashing_simple(servers):
         message = node.node.recv_json()
         print(f"data is {message}")
         print(f"from node: {node.name}")
-        time.sleep(1)
+        time.sleep(2)
     print("Done reading")
 
 def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
@@ -91,7 +91,7 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         print(f"to node:{node.name}")
         node.node.send_json(data)
         message = node.node.recv_json()
-        time.sleep(1)
+        time.sleep(2)
     print("Done writing...")
 
     print("Adding new node...")
@@ -138,9 +138,9 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
         node, _= client_ring.get_node(data['key'])
         node.node.send_json(data)
         message = node.node.recv_json()
-        time.sleep(1)
+        time.sleep(2)
     print("Done Rebalancing data")
-    time.sleep(1)
+    time.sleep(2)
     print("Done adding new node")
 
 
@@ -180,7 +180,7 @@ def generate_data_consistent_hashing_add_remove(servers, port_to_delete):
     node.node.send_json({'op': 'DELETE_NODE', 'key': port_to_delete})
     message = node.node.recv_json()
     print(f"deleted node {message}")
-    time.sleep(1)
+    time.sleep(2)
     print("Done removing")
 
 def generate_data_hrw_hashing(servers):

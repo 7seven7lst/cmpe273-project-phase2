@@ -1,0 +1,512 @@
+### set up initial services ###
+
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python init_service_registration.py 4
+num_server=4
+Starting a server at:2000...
+Starting a server at:2001...
+Starting a server at:2002...
+Starting a server at:2003...
+
+### examine services from consule ###
+
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % curl http://127.0.0.1:8500/v1/agent/services
+{
+    "server-2000": {
+        "ID": "server-2000",
+        "Service": "server-2000",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2000,
+        "Address": "",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2001": {
+        "ID": "server-2001",
+        "Service": "server-2001",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2001,
+        "Address": "",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2002": {
+        "ID": "server-2002",
+        "Service": "server-2002",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2002,
+        "Address": "",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2003": {
+        "ID": "server-2003",
+        "Service": "server-2003",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2003,
+        "Address": "",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    }
+}
+
+
+### start up consumer ###
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python server_consumer.py
+Starting a server at:2000...
+Starting a server at:2001...
+Starting a server at:2002...
+Starting a server at:2003...
+
+
+### start up provider  with round robin ###
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python client_producer.py rr
+Servers: ['tcp://127.0.0.1:2000', 'tcp://127.0.0.1:2001', 'tcp://127.0.0.1:2002', 'tcp://127.0.0.1:2003']
+*********************
+Starting Round Robin...
+Creating a server connection to tcp://127.0.0.1:2000...
+Creating a server connection to tcp://127.0.0.1:2001...
+Creating a server connection to tcp://127.0.0.1:2002...
+Creating a server connection to tcp://127.0.0.1:2003...
+Sending data:{'op': 'PUT', 'key': 'key-0', 'value': 'value-0'}
+Sending data:{'op': 'PUT', 'key': 'key-1', 'value': 'value-1'}
+Sending data:{'op': 'PUT', 'key': 'key-2', 'value': 'value-2'}
+Sending data:{'op': 'PUT', 'key': 'key-3', 'value': 'value-3'}
+Sending data:{'op': 'PUT', 'key': 'key-4', 'value': 'value-4'}
+Sending data:{'op': 'PUT', 'key': 'key-5', 'value': 'value-5'}
+Sending data:{'op': 'PUT', 'key': 'key-6', 'value': 'value-6'}
+Sending data:{'op': 'PUT', 'key': 'key-7', 'value': 'value-7'}
+Sending data:{'op': 'PUT', 'key': 'key-8', 'value': 'value-8'}
+Sending data:{'op': 'PUT', 'key': 'key-9', 'value': 'value-9'}
+Done Round Robin...
+*********************
+
+### consumer printout for round robin ###
+Server_port=2000:key=key-0,value=value-0
+Putting key, value... key-0 value-0
+Server_port=2001:key=key-1,value=value-1
+Putting key, value... key-1 value-1
+Server_port=2002:key=key-2,value=value-2
+Putting key, value... key-2 value-2
+Server_port=2003:key=key-3,value=value-3
+Putting key, value... key-3 value-3
+Server_port=2000:key=key-4,value=value-4
+Putting key, value... key-4 value-4
+Server_port=2001:key=key-5,value=value-5
+Putting key, value... key-5 value-5
+Server_port=2002:key=key-6,value=value-6
+Putting key, value... key-6 value-6
+Server_port=2003:key=key-7,value=value-7
+Putting key, value... key-7 value-7
+Server_port=2000:key=key-8,value=value-8
+Putting key, value... key-8 value-8
+Server_port=2001:key=key-9,value=value-9
+Putting key, value... key-9 value-9
+
+
+### start with rendavous hashing  for provider###
+
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python client_producer.py hrw
+Servers: ['tcp://127.0.0.1:2000', 'tcp://127.0.0.1:2001', 'tcp://127.0.0.1:2002', 'tcp://127.0.0.1:2003']
+*********************
+Starting Rendavous Hashing...
+Creating a server connection to tcp://127.0.0.1:2000...
+Creating a server connection to tcp://127.0.0.1:2001...
+Creating a server connection to tcp://127.0.0.1:2002...
+Creating a server connection to tcp://127.0.0.1:2003...
+Sending data:{'op': 'PUT', 'key': 'key-0', 'value': 'value-0'}
+Sending data:{'op': 'PUT', 'key': 'key-1', 'value': 'value-1'}
+Sending data:{'op': 'PUT', 'key': 'key-2', 'value': 'value-2'}
+Sending data:{'op': 'PUT', 'key': 'key-3', 'value': 'value-3'}
+Sending data:{'op': 'PUT', 'key': 'key-4', 'value': 'value-4'}
+Sending data:{'op': 'PUT', 'key': 'key-5', 'value': 'value-5'}
+Sending data:{'op': 'PUT', 'key': 'key-6', 'value': 'value-6'}
+Sending data:{'op': 'PUT', 'key': 'key-7', 'value': 'value-7'}
+Sending data:{'op': 'PUT', 'key': 'key-8', 'value': 'value-8'}
+Sending data:{'op': 'PUT', 'key': 'key-9', 'value': 'value-9'}
+Done Rendavous Hashing...
+*********************
+
+### consumer printout for rendavous hashing ###
+Server_port=2002:key=key-0,value=value-0
+Putting key, value... key-0 value-0
+Server_port=2001:key=key-1,value=value-1
+Putting key, value... key-1 value-1
+Server_port=2001:key=key-2,value=value-2
+Putting key, value... key-2 value-2
+Server_port=2003:key=key-3,value=value-3
+Putting key, value... key-3 value-3
+Server_port=2001:key=key-4,value=value-4
+Putting key, value... key-4 value-4
+Server_port=2002:key=key-5,value=value-5
+Putting key, value... key-5 value-5
+Server_port=2002:key=key-6,value=value-6
+Putting key, value... key-6 value-6
+Server_port=2001:key=key-7,value=value-7
+Putting key, value... key-7 value-7
+Server_port=2003:key=key-8,value=value-8
+Putting key, value... key-8 value-8
+Server_port=2000:key=key-9,value=value-9
+Putting key, value... key-9 value-9
+
+
+### start up consistent hashing client to add node 2004 and then delete node 2003 ###
+
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python client_producer.py ch-add-remove 2003
+Servers: ['tcp://127.0.0.1:2000', 'tcp://127.0.0.1:2001', 'tcp://127.0.0.1:2002', 'tcp://127.0.0.1:2003']
+Starting Consistent Hashing...
+Creating a server connection to tcp://127.0.0.1:2000...
+Creating a server connection to tcp://127.0.0.1:2001...
+Creating a server connection to tcp://127.0.0.1:2002...
+Creating a server connection to tcp://127.0.0.1:2003...
+*********************
+Writing data, 1-10...
+Sending data:{'op': 'PUT', 'key': 'key-0', 'value': 'value-0'}
+to node:tcp://127.0.0.1:2001
+Sending data:{'op': 'PUT', 'key': 'key-1', 'value': 'value-1'}
+to node:tcp://127.0.0.1:2002
+Sending data:{'op': 'PUT', 'key': 'key-2', 'value': 'value-2'}
+to node:tcp://127.0.0.1:2000
+Sending data:{'op': 'PUT', 'key': 'key-3', 'value': 'value-3'}
+to node:tcp://127.0.0.1:2000
+Sending data:{'op': 'PUT', 'key': 'key-4', 'value': 'value-4'}
+to node:tcp://127.0.0.1:2003
+Sending data:{'op': 'PUT', 'key': 'key-5', 'value': 'value-5'}
+to node:tcp://127.0.0.1:2003
+Sending data:{'op': 'PUT', 'key': 'key-6', 'value': 'value-6'}
+to node:tcp://127.0.0.1:2000
+Sending data:{'op': 'PUT', 'key': 'key-7', 'value': 'value-7'}
+to node:tcp://127.0.0.1:2000
+Sending data:{'op': 'PUT', 'key': 'key-8', 'value': 'value-8'}
+to node:tcp://127.0.0.1:2001
+Sending data:{'op': 'PUT', 'key': 'key-9', 'value': 'value-9'}
+to node:tcp://127.0.0.1:2000
+Done writing...
+*********************
+*********************
+Adding new node...
+new node successfully added, {'port': 2004}
+Creating a server connection to tcp://127.0.0.1:2004...
+*********************
+node that is next to newly added node have data {'collection': [{'key': 'key-2', 'value': 'value-2'}, {'key': 'key-3', 'value': 'value-3'}, {'key': 'key-6', 'value': 'value-6'}, {'key': 'key-7', 'value': 'value-7'}, {'key': 'key-9', 'value': 'value-9'}]}
+*********************
+Balancing Data...
+rebalanced data to new node, {'key': 'key-2', 'value': 'value-2'}
+rebalanced data from old node, {'key': 'key-2', 'status': 'deleted'}
+rebalanced data to new node, {'key': 'key-3', 'value': 'value-3'}
+rebalanced data from old node, {'key': 'key-3', 'status': 'deleted'}
+rebalanced data to new node, {'key': 'key-6', 'value': 'value-6'}
+rebalanced data from old node, {'key': 'key-6', 'status': 'deleted'}
+rebalanced data to new node, {'key': 'key-7', 'value': 'value-7'}
+rebalanced data from old node, {'key': 'key-7', 'status': 'deleted'}
+rebalanced data to new node, {'key': 'key-9', 'value': 'value-9'}
+rebalanced data from old node, {'key': 'key-9', 'status': 'deleted'}
+*********************
+Adding more data...
+Sending data:{'op': 'PUT', 'key': 'key-11', 'value': 'value-11'}
+Sending data:{'op': 'PUT', 'key': 'key-12', 'value': 'value-12'}
+Sending data:{'op': 'PUT', 'key': 'key-13', 'value': 'value-13'}
+Sending data:{'op': 'PUT', 'key': 'key-14', 'value': 'value-14'}
+Sending data:{'op': 'PUT', 'key': 'key-15', 'value': 'value-15'}
+Sending data:{'op': 'PUT', 'key': 'key-16', 'value': 'value-16'}
+Sending data:{'op': 'PUT', 'key': 'key-17', 'value': 'value-17'}
+Sending data:{'op': 'PUT', 'key': 'key-18', 'value': 'value-18'}
+Sending data:{'op': 'PUT', 'key': 'key-19', 'value': 'value-19'}
+Done Rebalancing Data
+Done Adding New Node
+*********************
+*********************
+Removing node...
+node to be removed has data: {'collection': [{'key': 'key-4', 'value': 'value-4'}, {'key': 'key-5', 'value': 'value-5'}, {'key': 'key-12', 'value': 'value-12'}]}
+data is rebalanced to next node: {'key': 'key-4', 'value': 'value-4'}
+data is rebalanced from current node: {'key': 'key-4', 'status': 'deleted'}
+data is rebalanced to next node: {'key': 'key-5', 'value': 'value-5'}
+data is rebalanced from current node: {'key': 'key-5', 'status': 'deleted'}
+data is rebalanced to next node: {'key': 'key-12', 'value': 'value-12'}
+data is rebalanced from current node: {'key': 'key-12', 'status': 'deleted'}
+now data is moved in the next node is {'collection': [{'key': 'key-1', 'value': 'value-1'}, {'key': 'key-18', 'value': 'value-18'}, {'key': 'key-4', 'value': 'value-4'}, {'key': 'key-5', 'value': 'value-5'}, {'key': 'key-12', 'value': 'value-12'}]}
+deleted node {'port': 2003}
+Done removing
+*********************
+
+
+### consumer print out for consistent hashing client to add node 2004 and then delete node 2003 ###
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % pipenv run python server_consumer.py
+Starting a server at:2000...
+Starting a server at:2001...
+Starting a server at:2002...
+Starting a server at:2003...
+Server_port=2001:key=key-0,value=value-0
+Putting key, value... key-0 value-0
+Server_port=2002:key=key-1,value=value-1
+Putting key, value... key-1 value-1
+Server_port=2000:key=key-2,value=value-2
+Putting key, value... key-2 value-2
+Server_port=2000:key=key-3,value=value-3
+Putting key, value... key-3 value-3
+Server_port=2003:key=key-4,value=value-4
+Putting key, value... key-4 value-4
+Server_port=2003:key=key-5,value=value-5
+Putting key, value... key-5 value-5
+Server_port=2000:key=key-6,value=value-6
+Putting key, value... key-6 value-6
+Server_port=2000:key=key-7,value=value-7
+Putting key, value... key-7 value-7
+Server_port=2001:key=key-8,value=value-8
+Putting key, value... key-8 value-8
+Server_port=2000:key=key-9,value=value-9
+Putting key, value... key-9 value-9
+Server_port=2000:key=None,value=None
+add node...
+Server_port=2000:key=None,value=None
+GETTING ALL...
+Server_port=2004:key=key-2,value=value-2
+Putting key, value... key-2 value-2
+Server_port=2000:key=key-2,value=None
+DELETING ONE key... key-2
+Server_port=2004:key=key-3,value=value-3
+Putting key, value... key-3 value-3
+Server_port=2000:key=key-3,value=None
+DELETING ONE key... key-3
+Server_port=2004:key=key-6,value=value-6
+Putting key, value... key-6 value-6
+Server_port=2000:key=key-6,value=None
+DELETING ONE key... key-6
+Server_port=2004:key=key-7,value=value-7
+Putting key, value... key-7 value-7
+Server_port=2000:key=key-7,value=None
+DELETING ONE key... key-7
+Server_port=2004:key=key-9,value=value-9
+Putting key, value... key-9 value-9
+Server_port=2000:key=key-9,value=None
+DELETING ONE key... key-9
+Server_port=2001:key=key-11,value=value-11
+Putting key, value... key-11 value-11
+Server_port=2003:key=key-12,value=value-12
+Putting key, value... key-12 value-12
+Server_port=2000:key=key-13,value=value-13
+Putting key, value... key-13 value-13
+Server_port=2004:key=key-14,value=value-14
+Putting key, value... key-14 value-14
+Server_port=2001:key=key-15,value=value-15
+Putting key, value... key-15 value-15
+Server_port=2000:key=key-16,value=value-16
+Putting key, value... key-16 value-16
+Server_port=2004:key=key-17,value=value-17
+Putting key, value... key-17 value-17
+Server_port=2002:key=key-18,value=value-18
+Putting key, value... key-18 value-18
+Server_port=2004:key=key-19,value=value-19
+Putting key, value... key-19 value-19
+Server_port=2003:key=None,value=None
+GETTING ALL...
+Server_port=2002:key=key-4,value=value-4
+Putting key, value... key-4 value-4
+Server_port=2003:key=key-4,value=None
+DELETING ONE key... key-4
+Server_port=2002:key=key-5,value=value-5
+Putting key, value... key-5 value-5
+Server_port=2003:key=key-5,value=None
+DELETING ONE key... key-5
+Server_port=2002:key=key-12,value=value-12
+Putting key, value... key-12 value-12
+Server_port=2003:key=key-12,value=None
+DELETING ONE key... key-12
+Server_port=2002:key=None,value=None
+GETTING ALL...
+Server_port=2000:key=2003,value=None
+delete node...
+
+
+### consule service node registered and deregistered ###
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % curl http://127.0.0.1:8500/v1/agent/services
+{
+    "server-2000": {
+        "ID": "server-2000",
+        "Service": "server-2000",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2000,
+        "Address": "61346",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2001": {
+        "ID": "server-2001",
+        "Service": "server-2001",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2001,
+        "Address": "61347",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2002": {
+        "ID": "server-2002",
+        "Service": "server-2002",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2002,
+        "Address": "61348",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2003": {
+        "ID": "server-2003",
+        "Service": "server-2003",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2003,
+        "Address": "61349",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2004": {
+        "ID": "server-2004",
+        "Service": "server-2004",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2004,
+        "Address": "61746",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    }
+}
+
+(base) shengtaoli@x86_64-apple-darwin13 cmpe273-project-phase2 % curl http://127.0.0.1:8500/v1/agent/services
+{
+    "server-2000": {
+        "ID": "server-2000",
+        "Service": "server-2000",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2000,
+        "Address": "61346",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2001": {
+        "ID": "server-2001",
+        "Service": "server-2001",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2001,
+        "Address": "61347",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2002": {
+        "ID": "server-2002",
+        "Service": "server-2002",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2002,
+        "Address": "61348",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    },
+    "server-2004": {
+        "ID": "server-2004",
+        "Service": "server-2004",
+        "Tags": [
+            "primary",
+            "v1"
+        ],
+        "Meta": {},
+        "Port": 2004,
+        "Address": "61746",
+        "Weights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "EnableTagOverride": false,
+        "Datacenter": "dc1"
+    }
+}
